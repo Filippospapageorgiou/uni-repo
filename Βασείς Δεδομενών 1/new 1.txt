@@ -1,0 +1,170 @@
+DROP DATABASE IF EXISTS new_personnel;
+CREATE DATABASE new_personnel;
+USE new_personnel;
+
+CREATE TABLE DEPT(DEPTNO INT(2) NOT NULL,DNAME VARCHAR(14),
+				LOC VARCHAR(14),PRIMARY KEY(DEPTNO));
+
+CREATE TABLE EMP(EMPNO INT(2) NOT NULL,ENAME VARCHAR(14),
+				 JOB VARCHAR(14),HIREDATE DATE,MGR INT(2),
+                 SAL FLOAT(7,2),COMM FLOAT(7,2),
+                 DEPTNO INT(2),
+                 PRIMARY KEY(EMPNO),
+                 FOREIGN KEY(DEPTNO) REFERENCES DEPT(DEPTNO));
+
+CREATE TABLE PROJ(PROJ_CODE INT(2) NOT NULL,DESCRIPTION VARCHAR(14),
+                   PRIMARY KEY (PROJ_CODE));
+                  
+CREATE TABLE ASSIGN(EMPNO INT(2) NOT NULL,PROJ_CODE INT(2) NOT NULL,
+                    A_TIME INT(3),
+                    PRIMARY KEY(EMPNO,PROJ_CODE),
+                    FOREIGN KEY (EMPNO) REFERENCES EMP(EMPNO),
+                    FOREIGN KEY (PROJ_CODE) REFERENCES PROJ(PROJ_CODE));
+              
+SHOW TABLES;
+
+# Tables_in_new_personnel
+----------------------------------------
+1 |  DEPT
+2 |  EMP
+3 |  PROJ
+4 |  ASSIGN
+
+
+DESCRIBE EMP;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| EMPNO    | int(2)      | NO   | PRI | NULL    |       |
+| ENAME    | varchar(14) | YES  |     | NULL    |       |
+| JOB      | varchar(14) | YES  |     | NULL    |       |
+| HIREDATE | date        | YES  |     | NULL    |       |
+| MGR      | int(2)      | YES  |     | NULL    |       |
+| SAL      | float(7,2)  | YES  |     | NULL    |       |
+| COMM     | float(7,2)  | YES  |     | NULL    |       |
+| DEPTNO   | int(2)      | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+DESCRIBE DEPT;
++--------+-------------+------+-----+---------+-------+
+| Field  | Type        | Null | Key | Default | Extra |
++--------+-------------+------+-----+---------+-------+
+| DEPTNO | int(2)      | NO   | PRI | NULL    |       |
+| DNAME  | varchar(14) | YES  |     | NULL    |       |
+| LOC    | varchar(14) | YES  |     | NULL    |       |
++--------+-------------+------+-----+---------+-------+
+
+
+DESCRIBE PROJ;
+
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| PROJ_CODE   | int(2)      | NO   | PRI | NULL    |       |
+| DESCRIPTION | varchar(14) | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+DESCRIBE ASSIGN;
+
++-----------+--------+------+-----+---------+-------+
+| Field     | Type   | Null | Key | Default | Extra |
++-----------+--------+------+-----+---------+-------+
+| EMPNO     | int(2) | NO   | PRI | NULL    |       |
+| PROJ_CODE | int(2) | NO   | PRI | NULL    |       |
+| A_TIME    | int(3) | YES  |     | NULL    |       |
++-----------+--------+------+-----+---------+-------+
+
+
+
+INSERT INTO DEPT(DEPTNO, DNAME, LOC) 
+            VALUES (10, 'ACCOUNTING', 'ATHENS'); 
+INSERT INTO DEPT(DEPTNO,DNAME,LOC)
+			VALUES (20, 'SALES', 'LONDON');                                                                     
+INSERT INTO DEPT(DEPTNO, DNAME, LOC)
+            VALUES ('30','RESEARCH', 'CHICAGO');                                                                    
+INSERT INTO DEPT(DEPTNO, DNAME, LOC)
+            VALUES (40, 'PAYROLL', 'LONDON');  
+
+INSERT INTO EMP(EMPNO, ENAME, JOB,HIREDATE,MGR, SAL, COMM, DEPTNO)
+         VALUES(10, 'CODD', 'ANALYST','1989/1/1',15, 3000, NULL, 10);
+INSERT INTO EMP(EMPNO, ENAME, JOB,HIREDATE,MGR, SAL, COMM, DEPTNO)
+          VALUES (15, 'ELMASRI', 'ANALYST','1995/5/2',15,1200,150,10);                    
+INSERT INTO EMP(EMPNO, ENAME, JOB,HIREDATE,MGR, SAL, COMM, DEPTNO)
+		  VALUES (20, 'NAVATHE', 'SALESMAN','1977/7/7',20,2000,NULL,20);                    
+INSERT INTO EMP(EMPNO, ENAME, JOB,HIREDATE,MGR, SAL, COMM, DEPTNO)
+		  VALUES (30, 'DATE', 'PROGRAMMER','2004/5/4',15,1800,200,10); 
+
+          
+SELECT *
+FROM EMP;
+
++-------+---------+------------+------------+------+---------+--------+--------+
+| EMPNO | ENAME   | JOB        | HIREDATE   | MGR  | SAL     | COMM   | DEPTNO |
++-------+---------+------------+------------+------+---------+--------+--------+
+|    15 | ELMASRI | ANALYST    | 1995-05-02 |   15 | 1200.00 | 150.00 |     10 |
+|    20 | NAVATHE | SALESMAN   | 1977-07-07 |   20 | 2000.00 |   NULL |     20 |
+|    30 | DATE    | PROGRAMMER | 2004-05-04 |   15 | 1800.00 | 200.00 |     10 |
++-------+---------+------------+------------+------+---------+--------+--------+
+
+SELECT *
+FROM DEPT;
+
++--------+------------+---------+
+| DEPTNO | DNAME      | LOC     |
++--------+------------+---------+
+|     10 | ACCOUNTING | ATHENS  |
+|     20 | SALES      | LONDON  |
+|     30 | RESEARCH   | CHICAGO |
+|     40 | PAYROLL    | LONDON  |
++--------+------------+---------+
+
+
+INSERT INTO PROJ(PROJ_CODE,DESCRIPTION)
+            VALUES(100,'PAYROLL');
+INSERT INTO PROJ(PROJ_CODE,DESCRIPTION)
+            VALUES(200,'PERSONNEL');
+INSERT INTO PROJ(PROJ_CODE,DESCRIPTION)
+            VALUES(300,'SALES');    
+
+SELECT *
+FROM PROJ;
+
++-----------+-------------+
+| PROJ_CODE | DESCRIPTION |
++-----------+-------------+
+|       100 | PAYROLL     |
+|       200 | PERSONNEL   |
+|       300 | SALES       |
++-----------+-------------+
+
+
+    
+				
+          
+INSERT INTO ASSIGN(EMPNO,PROJ_CODE,A_TIME)
+            VALUES(10,100,40);
+INSERT INTO ASSIGN(EMPNO,PROJ_CODE,A_TIME)
+           VALUES(10,200,60);
+INSERT INTO ASSIGN(EMPNO,PROJ_CODE,A_TIME)
+           VALUES(15,100,100);
+INSERT INTO ASSIGN(EMPNO,PROJ_CODE,A_TIME)
+           VALUES(20,200,100);           
+INSERT INTO ASSIGN(EMPNO,PROJ_CODE,A_TIME)
+           VALUES(30,100,100);  
+	
+SELECT *
+FROM ASSIGN;
+
++-------+-----------+--------+
+| EMPNO | PROJ_CODE | A_TIME |
++-------+-----------+--------+
+|    10 |       100 |     40 |
+|    10 |       200 |     60 |
+|    15 |       100 |    100 |
+|    20 |       200 |    100 |
+|    30 |       100 |    100 |
++-------+-----------+--------+
+	  
+			  
+                    
+                    

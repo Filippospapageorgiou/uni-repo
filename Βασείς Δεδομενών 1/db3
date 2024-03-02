@@ -1,0 +1,301 @@
+4. Δημιουργήστε την view με όνομα EMP_VIEW.
+
+MariaDB [personel]> create view EMP_VIEW(e_ID,e_Name,e_Job,e_Dept,e_Comm) as select EMPNO,NAME,JOBCODE,DEPTNO,COMM from EMP;
+Query OK, 0 rows affected (0,006 sec)
+
+
+5. Εμφανίστε τα περιεχόμενα της view :
+
+MariaDB [personel]> select *
+    -> from EMP_VIEW
+    -> ;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   30 | ΝΙΚΟΥ          |   300 |     60 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+4 rows in set (0,001 sec)
+
+6. Οι νέες εγγραφές στον πίνακα EMP, επηρεάζουν και την όψη EMP_VIEW. Δοκιμάστε
+δηλώσεις insert, update, delete στον πίνακα EMP και εμφανίστε την επίδρασή τους στον
+πίνακα EMP και στην όψη EMP_VIEW.
+
+MariaDB [personel]> insert into EMP(EMPNO,NAME,JOBCODE,DEPTNO,COMM) values (90,'Βασιλης',100,50,NULL);
+Query OK, 1 row affected (0,023 sec)
+
+MariaDB [personel]> select * from EMP;
++-------+----------------+------+---------+--------+
+| EMPNO | NAME           | COMM | JOBCODE | DEPTNO |
++-------+----------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ         |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ        | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ          | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ         | NULL |     200 |     50 |
+|    90 | Βασιλης        | NULL |     100 |     50 |
++-------+----------------+------+---------+--------+
+5 rows in set (0,000 sec)
+
+MariaDB [personel]> select * from EMP_VIEW;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   30 | ΝΙΚΟΥ          |   300 |     60 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Βασιλης        |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+5 rows in set (0,000 sec)
+
+
+MariaDB [personel]> update EMP
+    -> set NAME='Κωστας'
+    -> where EMPNO=90;
+Query OK, 1 row affected (0,019 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [personel]> SELECT * FROM EMP;
++-------+----------------+------+---------+--------+
+| EMPNO | NAME           | COMM | JOBCODE | DEPTNO |
++-------+----------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ         |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ        | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ          | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ         | NULL |     200 |     50 |
+|    90 | Κωστας         | NULL |     100 |     50 |
++-------+----------------+------+---------+--------+
+5 rows in set (0,000 sec)
+
+MariaDB [personel]> SELECT * FROM EMP_VIEW;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   30 | ΝΙΚΟΥ          |   300 |     60 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+5 rows in set (0,001 sec)
+
+7. Οι νέες εγγραφές στην όψη EMP_VIEW, επηρεάζουν και τον πίνακα EMP. Δοκιμάστε
+δηλώσεις insert, update, delete στην όψη EMP_VIEW και εμφανίστε την επίδρασή τους
+στον πίνακα EMP και στην όψη EMP_VIEW.
+
+MariaDB [personel]> insert into EMP_VIEW(e_ID, e_Name, e_Job, e_Dept, e_Comm)
+    -> values (100, 'adams', 100, 60, null);
+Query OK, 1 row affected (0,003 sec)
+
+MariaDB [personel]> update EMP_VIEW set e_Job=200 where e_ID=100;
+Query OK, 1 row affected (0,001 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [personel]> select * from EMP;
++-------+----------------+------+---------+--------+
+| EMPNO | NAME           | COMM | JOBCODE | DEPTNO |
++-------+----------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ         |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ        | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ          | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ         | NULL |     200 |     50 |
+|    90 | Κωστας         | NULL |     100 |     50 |
+|   100 | adams          | NULL |     200 |     60 |
++-------+----------------+------+---------+--------+
+6 rows in set (0,000 sec)
+
+MariaDB [personel]> select * from EMP_VIEW;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   30 | ΝΙΚΟΥ          |   300 |     60 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
+|  100 | adams          |   200 |     60 |   NULL |
++------+----------------+-------+--------+--------+
+6 rows in set (0,001 sec)
+
+
+8. Δημιουργήστε μια όψη που θα εμφανίζει τους υπαλλήλους του τμήματος SALES
+
+
+MariaDB [personel]> create view EMP_SALES(e_ID,e_Name,e_Job,e_Dept,e_Comm) as
+    -> SELECT EMPNO,NAME,JOBCODE,DEPTNO,COMM FROM EMP
+    -> Where DEPTNO=50;
+
+MariaDB [personel]> select * from EMP_SALES;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+4 rows in set (0,001 sec)
+
+MariaDB [personel]> select * from EMP;
++-------+----------------+------+---------+--------+
+| EMPNO | NAME           | COMM | JOBCODE | DEPTNO |
++-------+----------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ         |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ        | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ          | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ         | NULL |     200 |     50 |
+|    90 | Κωστας         | NULL |     100 |     50 |
+|   100 | adams          | NULL |     200 |     60 |
++-------+----------------+------+---------+--------+
+6 rows in set (0,000 sec)
+
+
+9. Πραγματοποιήστε εισαγωγή δεδομένων στον πίνακα EMP:
+
+insert into EMP(EMPno,NAME,JOBCODE,DEPTNO,COMM) values (110,'Γιαννής',100,60,NULL);
+
+10. Εμφανίζονται τα στοιχεία της εγγραφής του βήματος 9 στον πίνακα EMP; Αιτιολογήστε την
+απάντησή σας.
+
+MariaDB [personel]> select * from EMP;
++-------+----------------+------+---------+--------+
+| EMPNO | NAME           | COMM | JOBCODE | DEPTNO |
++-------+----------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ         |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ        | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ          | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ         | NULL |     200 |     50 |
+|    90 | Κωστας         | NULL |     100 |     50 |
+|   100 | adams          | NULL |     200 |     60 |
+|   110 | Γιαννής        | NULL |     100 |     60 |
++-------+----------------+------+---------+--------+
+7 rows in set (0,000 sec)
+
+
+11. Εμφανίζονται τα στοιχεία της εγγραφής του βήματος 9 στην όψη EMP_ON_SALES;
+Αιτιολογήστε την απάντησή σας.
+
+MariaDB [personel]> update EMP
+    -> set DEPTNO=50
+    -> WHERE EMPNO=110;
+
+MariaDB [personel]> select * from EMP_SALES;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
+|  110 | Γιαννής        |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+5 rows in set (0,001 sec)
+
+
+12. Πραγματοποιήστε εισαγωγή δεδομένων στην όψη EMP_ON_SALES:
+
+
+13. Εμφανίζονται τα στοιχεία της εγγραφής του βήματος 12 στον πίνακα EMP; Αιτιολογήστε
+την απάντησή σας.
+14. Εμφανίζονται τα στοιχεία της εγγραφής του βήματος 12 στην όψη EMP_ON_SALES;
+Αιτιολογήστε την απάντησή σας.
+
+
+MariaDB [personel]> insert into EMP_SALES(e_ID,e_Name,e_Job,e_Dept,e_Comm) values (120,'χριστινα',100,70,NULL);
+Query OK, 1 row affected (0,003 sec)
+
+MariaDB [personel]> select * from EMP_SALES;
++------+----------------+-------+--------+--------+
+| e_ID | e_Name         | e_Job | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
+|  110 | Γιαννής        |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+5 rows in set (0,000 sec)
+
+MariaDB [personel]> select * from EMP;
++-------+------------------+------+---------+--------+
+| EMPNO | NAME             | COMM | JOBCODE | DEPTNO |
++-------+------------------+------+---------+--------+
+|    10 | ΣΠΥΡΟΥ           |  450 |     100 |     50 |
+|    20 | ΧΡΗΣΤΟΥ          | NULL |     200 |     50 |
+|    30 | ΝΙΚΟΥ            | NULL |     300 |     60 |
+|    40 | ΣΠΥΡΟΥ           | NULL |     200 |     50 |
+|    90 | Κωστας           | NULL |     100 |     50 |
+|   100 | adams            | NULL |     200 |     60 |
+|   110 | Γιαννής          | NULL |     100 |     50 |
+|   120 | χριστινα         | NULL |     100 |     70 |
++-------+------------------+------+---------+--------+
+
+
+
+15. Δημιουργήστε την παρακάτω όψη:
+
+
+MariaDB [personel]> create view EPM_ON_SALES(e_Id,e_Name,e_Jon,e_Dept,e_Comm) as 
+    -> select EMPNO,NAME,JOBCODE,DEPTNO,COMM from EMP 
+    -> WHERE DEPTNO=50 with check option;
+Query OK, 0 rows affected (0,006 sec)
+
+
+
+16. Πραγματοποιήστε εισαγωγή δεδομένων στην όψη EMP_ON_SALES_S:
+
+ERROR 1369 (44000): CHECK OPTION failed `personel`.`EPM_ON_SALES`
+MariaDB [personel]> insert into EPM_ON_SALES(e_Id,e_Name,e_Jon,e_Dept,e_Comm) values (130,'DATE',100,60,NULL);
+
+
+18. Εμφανίζονται τα στοιχεία της εγγραφής του βήματος 16 στην όψη EMP_ON_SALES_S;
+Αιτιολογήστε την απάντησή σας.
+
+MariaDB [personel]> select * from EPM_ON_SALES;
++------+----------------+-------+--------+--------+
+| e_Id | e_Name         | e_Jon | e_Dept | e_Comm |
++------+----------------+-------+--------+--------+
+|   10 | ΣΠΥΡΟΥ         |   100 |     50 |    450 |
+|   20 | ΧΡΗΣΤΟΥ        |   200 |     50 |   NULL |
+|   40 | ΣΠΥΡΟΥ         |   200 |     50 |   NULL |
+|   90 | Κωστας         |   100 |     50 |   NULL |
+|  110 | Γιαννής        |   100 |     50 |   NULL |
++------+----------------+-------+--------+--------+
+5 rows in set (0,001 sec)
+
+
+19. Δημιουργήστε την παρακάτω όψη:
+
+MariaDB [personel]> create view EMP_DISTINCT_NAMES (NAME) as select distinct NAME
+    -> from EMP order by NAME;
+Query OK, 0 rows affected (0,006 sec)
+
+20. Τι τύπου όψη είναι η EMP_DISTINCT_NAMES; Εκτελέστε την ακόλουθη εντολή και
+αιτιολογήστε το αποτέλεσμά της:
+
+MariaDB [personel]> insert into EMP_DISTINCT_NAMES values ('GREEN');
+ERROR 1471 (HY000): The target table EMP_DISTINCT_NAMES of the INSERT is not insertable-into
+
+21. Τι τύπου όψεις είναι η ακόλουθες και τι εμπεριέχει η καθεμιά από αυτές:
+22. Εκτελέστε τις κατάλληλες εντολές ώστε να καταδείξετε τον τύπο των όψεων που
+δημιουργήσατε στο βήμα 21.
+
+MariaDB [personel]> create view GROUP_EMP(DEPT, COUNT_EMP, AVG_COMM) as select DEPTNO, count(*), avg(COMM) from
+    -> EMP group by DEPTNO;
+Query OK, 0 rows affected (0,006 sec)
+
+
+MariaDB [personel]> create view new_EMP_DEPT_VIEW(EMPNO, NAME, JOBCODE, DEPTNO) as select EMPNO, NAME, JOBCODE, EMP.DEPTNO from EMP inner join DEPT on EMP.DEPTNO=DEPT.DEPTNO;
+Query OK, 0 rows affected (0,006 sec)
+
+
+MariaDB [personel]> create view new_EMP_DEPT_VIEW(EMPNO, NAME, JOBCODE, DEPTNO) as select EMPNO, NAME, JOBCODE, EMP.DEPTNO from EMP inner join DEPT on EMP.DEPTNO=DEPT.DEPTNO;
+ERROR 1050 (42S01): Table 'new_EMP_DEPT_VIEW' already exists
+
+
+
+
+
+

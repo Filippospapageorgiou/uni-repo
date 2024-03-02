@@ -1,0 +1,137 @@
+1. Εντοπίστε την δήλωση με την οποία θα εμφανίζονται οι υπάλληλοι
+(ENAME,DEPTNO) που εργάζονται στο τμήμα 10, ταξινομημένοι κατά την
+προμήθειά τους 
+
+SELECT *
+FROM EMP E LEFT JOIN DEPT D 
+     ON E.DEPTNO=D.DEPTNO
+WHERE D.DEPTNO=10
+ORDER BY COMM;   
+
++-------+---------+------------+------------+------+---------+--------+--------+--------+------------+--------+
+| EMPNO | ENAME   | JOB        | HIREDATE   | MGR  | SAL     | COMM   | DEPTNO | DEPTNO | DNAME      | LOC    |
++-------+---------+------------+------------+------+---------+--------+--------+--------+------------+--------+
+|    10 | CODD    | ANALYST    | 1989-01-01 |   15 | 3000.00 |   NULL |     10 |     10 | ACCOUNTING | ATHENS |
+|    15 | ELMASRI | ANALYST    | 1995-05-02 |   15 | 1200.00 | 150.00 |     10 |     10 | ACCOUNTING | ATHENS |
+|    30 | DATE    | PROGRAMMER | 2004-05-04 |   15 | 1800.00 | 200.00 |     10 |     10 | ACCOUNTING | ATHENS |
++-------+---------+------------+------------+------+---------+--------+--------+--------+------------+--------+
+
+2. Εντοπίστε την δήλωση με την οποία θα εμφανίζονται οι υπάλληλοι
+(ENAME,JOB,SAL) ταξινομημένοι κατά θέση (αύξουσα τάξη) και κατά το μισθό
+τους (φθίνουσα τάξη)
+
+
+SELECT ENAME,JOB,SAL
+FROM EMP
+ORDER BY JOB,SAL DESC;  
+
++---------+------------+---------+
+| ENAME   | JOB        | SAL     |
++---------+------------+---------+
+| CODD    | ANALYST    | 3000.00 |
+| ELMASRI | ANALYST    | 1200.00 |
+| DATE    | PROGRAMMER | 1800.00 |
+| NAVATHE | SALESMAN   | 2000.00 |
++---------+------------+---------+
+
+
+3. Εντοπίστε την δήλωση με την οποία θα εμφανίζεται ο μέσος όρος μισθού ανά
+τμήμα όταν οι εργαζόμενοι είναι τουλάχιστον 1.
+
+SELECT DEPTNO,AVG(SAL)
+FROM EMP
+GROUP BY DEPTNO
+HAVING COUNT(*)<=1;
+
++--------+-------------+
+| DEPTNO | AVG(SAL)    |
++--------+-------------+
+|     20 | 2000.000000 |
++--------+-------------+
+
+4. Εντοπίστε την δήλωση με την οποία θα εμφανίζεται ο μέσος χρόνος
+απασχόλησης (σε έτη) ανά τμήμα (Πίνακας 1)
+
+ELECT DEPTNO AS 'ΤΜΗΜΑ' ,AVG((YEAR(CURDATE())-YEAR(HIREDATE))) AS 'ΠΡΟΥΠΗΡΕΣΙΑ' 
+FROM EMP
+GROUP BY DEPTNO;
+
++------------+------------------------+
+| ΤΜΗΜΑ      | ΠΡΟΥΠΗΡΕΣΙΑ            |
++------------+------------------------+
+|         10 |                27.0000 |
+|         20 |                46.0000 |
++------------+------------------------+
+
+5. Εντοπίστε την δήλωση με την οποία θα εμφανίζονται τα έργα (PNAME), οι
+απασχολούμενοι υπάλληλοι (ENAME) και οι θέσεις τους (JOB), ταξινομημένα
+κατά έργο και κατά θέση.
+
+SELECT DESCRIPTION,ENAME,JOB
+FROM EMP E JOIN ASSIGN A ON E.EMPNO=A.EMPNO
+     JOIN PROJ P ON P.PROJ_CODE=A.PROJ_CODE
+ORDER BY 1,3;    
+
++-------------+---------+------------+
+| DESCRIPTION | ENAME   | JOB        |
++-------------+---------+------------+
+| PAYROLL     | ELMASRI | ANALYST    |
+| PAYROLL     | CODD    | ANALYST    |
+| PAYROLL     | DATE    | PROGRAMMER |
+| PERSONNEL   | CODD    | ANALYST    |
+| PERSONNEL   | NAVATHE | SALESMAN   |
++-------------+---------+------------+
+
+
+6. Εντοπίστε την δήλωση με την οποία θα εμφανίζονται όλοι οι υπάλληλοι σε
+αντιστοιχία με τους προϊσταμένους τους (Πίνακας 2). Τα αποτελέσματα να είναι
+ταξινομημένα με βάση το όνομα τμήματος και το όνομα υπαλλήλου
+
+SELECT e.ENAME AS Employee, d.DNAME AS Department, m.ENAME AS Manager
+FROM EMP e
+JOIN DEPT d ON e.DEPTNO = d.DEPTNO
+LEFT JOIN EMP m ON e.MGR = m.EMPNO
+ORDER BY d.DNAME, e.ENAME, m.ENAME;
+
++----------+------------+---------+
+| Employee | Department | Manager |
++----------+------------+---------+
+| CODD     | ACCOUNTING | ELMASRI |
+| DATE     | ACCOUNTING | ELMASRI |
+| ELMASRI  | ACCOUNTING | ELMASRI |
+| NAVATHE  | SALES      | NAVATHE |
++----------+------------+---------+
+
+
+7.Εντοπίστε την δήλωση με την οποία θα εμφανίζονται τα ονόματα των
+υπαλλήλων, η θέση τους και η τοποθεσία (loc) των υπαλλήλων του τμήματος
+“RESEARCH” (Πίνακας 3).
+
+
+SELECT ENAME,JOB,LOC
+FROM EMP E JOIN DEPT D
+    ON E.DEPTNO=D.DEPTNO
+WHERE DNAME='RESEARCH';  
+
+
+Empty set (0,000 sec)
+
+
+8. Εντοπίστε την δήλωση με την οποία θα εμφανίζονται τα ονόματα των
+υπαλλήλων που συμμετέχουν στο έργο “PAYROLL” και δουλεύουν παραπάνω
+από 50 ώρες (PTIME) για το έργο αυτό.
+
+
+SELECT E.ENAME
+FROM EMP E JOIN ASSIGN A ON E.EMPNO=A.EMPNO
+     JOIN PROJ P ON P.PROJ_CODE=A.PROJ_CODE
+WHERE P.DESCRIPTION IN ('PAYROLL') AND A.A_TIME>50;
+
+
++---------+
+| ENAME   |
++---------+
+| ELMASRI |
+| DATE    |
++---------+
+
