@@ -1,0 +1,83 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+body{
+    min-height: 100vh;
+    background:#f7f7f7;
+    display: flex;
+    font-family: sans-serif;
+}
+
+.container{
+    margin: auto;
+    width: 500px;
+    max-width:90%;
+}
+
+.container form{
+    width:100%;
+    height:100%;
+    padding:30px;
+    margin:100px;
+    background: white;
+    botrder-radius:10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,.5);
+}
+
+.container form h1{
+    text-align: center;
+    margin-bottom: 24px;
+    color: #222;
+}
+
+.container form .form-group {
+    margin-bottom: 15px; /* Adjust as needed */
+}
+
+.container form .form-group label{
+    display:block;
+    margin-bottom: 5px;
+}
+
+
+
+.container form .form-control{
+    width:150px;
+    height:30px;
+    background:white;
+    border-radius: 4px;
+    border:1px solid silver;
+    margin:10px 0 18px 0;
+    padding: 0 10px;
+}
+
+.container form .btn-container {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    width: 100%; /* Take full width of the form */
+}
+
+
+.container form .btn {
+    width: 120px; /* Added unit */
+    height: 34px;
+    border: none;
+    outline: none;
+    background: #27a327;
+    cursor: pointer;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: white; /* Corrected spelling */
+    transition: background-color 0.3s ease; /* Optional for smooth color transition */
+}
+
+.container form .btn:hover {
+    background: #1e7b1e; /* Slightly darker green for hover effect */
+}
+
+.error-border {
+    border: 2px solid red;
+}

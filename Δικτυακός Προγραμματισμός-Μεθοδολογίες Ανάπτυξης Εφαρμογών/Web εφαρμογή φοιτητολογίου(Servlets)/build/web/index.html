@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html>
+    <head>
+        <title>WebApplication3</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div class="container">
+            <form action="./savelogin" method="POST">
+                <h1>Login to DATABASE</h1>
+                <div class="form-group">
+                    <label>username ID</label>
+                    <input type="text" class="form-control" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>password</label>
+                    <input type="password" class="form-control" name="password" required>
+                </div>
+                <div class="btn-container">
+                    <input type="submit" class="btn" value="Login">
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

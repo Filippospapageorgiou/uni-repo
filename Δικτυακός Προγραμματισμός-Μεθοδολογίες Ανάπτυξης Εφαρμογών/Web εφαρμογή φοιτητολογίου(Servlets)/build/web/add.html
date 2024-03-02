@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Add new Employee</title>
+    </head>
+    <body>
+
+        <h1>Add New Employee</h1>
+        <form action="./savestudent" method="POST">
+            <table>
+                <tr><td>Name:</td><td><input type="text" name="firstname" required/></td></tr>
+                <tr><td>Lastname:</td><td><input type="text" name="lastname" required/></td></tr>
+                <tr><td>school:</td><td><input type="text" name="school" required/></td></tr>
+                <tr><td>Semester:</td><td><input type="number" name="semester" required/></td></tr>
+                <tr><td>Passed:</td><td><input type="number" name="passed" required/></td></tr>
+                <tr><td colspan="2"><input type="submit" value="Save Student"/></td></tr>
+            </table>
+        </form>
+
+        <br/>
+        <p><a href="./view">View employees</a></p>
+        <p><a href="./landingpage.html">Home</a></p>
+
+    </body>
+</html>
