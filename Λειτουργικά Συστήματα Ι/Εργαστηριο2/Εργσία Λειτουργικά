@@ -1,0 +1,231 @@
+ΕΡΓΑΣΤΗΡΙΟ ΛΣ 2 / ΑΣΚΗΣΗ 2 / 2023-24
+Ονοματεπώνυμο"Φιλιππός Παπαγεωργίου
+ΑΜ:21390174
+
+
+
+Α.
+Έστω ένας δυσδιάστατος πίνακας ακεραίων Α (ΝxN). Γράψτε ένα πρόγραμμα σε C το οποίο
+(με χρήση της βιβλιοθήκης των POSIX Threads) θα βρίσκει το 'μέγιστο' στοιχείο (m) του
+πίνακα Α. Για να πετύχετε το παραπάνω θα πρέπει αρχικά να εκκινήσετε στο πρόγραμμά σας
+‘p’ threads, με σκοπό να ανατεθεί στη συνέχεια σε κάθε ένα από αυτά να υπολογίζει το
+επιμέρους μέγιστο Ν/p γραμμών του πίνακα (τα 'p', 'Ν', 'Α' θα πρέπει να τα δίνει ο χρήστης ή
+να τα διαβάζετε από αρχείο – επίσης θεωρήστε ότι το 'Ν' είναι ακέραιο πολλαπλάσιο του 'p').
+Πιο συγκεκριμένα, το κάθε thread θα πρέπει αρχικά (α) να υπολογίζει τοπικά (σε μια τοπική
+μεταβλητή – π.χ. local_max) τo επιμέρους μέγιστο για τις γραμμές του πίνακα που του
+αναλογούν, και (β) να ενημερώνει στο τέλος με το τοπικό του μέγιστο μια κοινή μεταβλητή
+(π.χ. total_max) η οποία θα αντιπροσωπεύει το τελικό μέγιστο του πίνακα Α. Το τελικό αυτό
+μέγιστο θα πρέπει στο τέλος να τυπώνεται στην οθόνη.
+Υπάρχει κάποιο «κρίσιμο τμήμα» στον κώδικά σας που απαιτεί προστασία ? Αν ναι, γράψτε
+επιπλέον τον κώδικα για την προστασία του κρίσιμου αυτού τμήματος.
+Δοκιμάστε να τρέξετε το πρόγραμμά σας για μεγάλα και πολύ μεγάλα ‘n’ (χρησιμοποιώντας
+για input αντίστοιχους πίνακες αρχικοποιημένους με τυχαίους αριθμούς) και μετρήστε τους
+χρόνους εκτέλεσης για ένα και περισσότερα από ένα threads (π.χ. 1, 2, 4 και 8 threads).
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define MAX_THREADS 8
+
+// Structure to pass thread arguments
+typedef struct {
+    int thread_id;
+    int** matrix;
+    int start_row;
+    int end_row;
+    int N;
+    int local_max;
+} ThreadArgs;
+
+int N;  // Size of the matrix
+int P;  // Number of threads
+int** matrix;  // Two-dimensional matrix
+int total_max = 0;  // Final maximum
+
+pthread_mutex_t mutex;  // Mutex to protect critical section
+
+// Function executed by each thread
+void* findMax(void* arg) {
+    ThreadArgs* args = (ThreadArgs*) arg;
+    int i, j;
+    args->local_max = 0;
+
+    // Find maximum element in assigned rows
+    for (i = args->start_row; i < args->end_row; i++) {
+        for (j = 0; j < args->N; j++) {
+            if (args->matrix[i][j] > args->local_max)
+                args->local_max = args->matrix[i][j];
+        }
+    }
+
+    // Update total maximum using mutex lock
+    pthread_mutex_lock(&mutex);
+    if (args->local_max > total_max)
+        total_max = args->local_max;
+    pthread_mutex_unlock(&mutex);
+
+    pthread_exit(NULL);
+}
+
+int main() {
+    int i, j;
+
+    // Read input from user or file
+    printf("Enter the size of the matrix (N): ");
+    scanf("%d", &N);
+
+    printf("Enter the number of threads (P): ");
+    scanf("%d", &P);
+
+    // Allocate memory for the matrix
+    matrix = (int**) malloc(N * sizeof(int*));
+    for (i = 0; i < N; i++) {
+        matrix[i] = (int*) malloc(N * sizeof(int));
+    }
+
+    // Initialize matrix with random numbers
+    srand(time(NULL));
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            matrix[i][j] = rand() % 100;  // Random number between 0 and 99
+        }
+    }
+
+    // Print the matrix
+    printf("Matrix:\n");
+    for (i = 0; i < N; i++) {
+        for (j = 0; j < N; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Create thread arguments
+    pthread_t threads[MAX_THREADS];
+    ThreadArgs thread_args[MAX_THREADS];
+
+    // Initialize mutex
+    pthread_mutex_init(&mutex, NULL);
+
+    // Calculate rows assigned to each thread
+    int rows_per_thread = N / P;
+    int remaining_rows = N % P;
+    int start_row = 0;
+    int end_row;
+
+    // Create threads
+    for (i = 0; i < P; i++) {
+        end_row = start_row + rows_per_thread;
+        if (remaining_rows > 0) {
+            end_row++;
+            remaining_rows--;
+        }
+
+        // Set thread arguments
+        thread_args[i].thread_id = i;
+        thread_args[i].matrix = matrix;
+        thread_args[i].start_row = start_row;
+        thread_args[i].end_row = end_row;
+        thread_args[i].N = N;
+
+        // Create thread
+        pthread_create(&threads[i], NULL, findMax, (void*) &thread_args[i]);
+
+        start_row = end_row;
+    }
+
+    // Wait for all threads to complete
+    for (i = 0; i < P; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    // Destroy mutex
+    pthread_mutex_destroy(&mutex);
+
+    // Print the maximum element
+    printf("Maximum element: %d\n", total_max);
+
+    // Free memory
+    for (i = 0; i < N; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+
+    return 0;
+}
+
+
+Το πρόγραμμα χρησιμοποιεί τη βιβλιοθήκη POSIX Threads για τον παραλληλισμό του έργου της εύρεσης του μέγιστου στοιχείου σε έναν δισδιάστατο πίνακα.
+Ο χρήστης παρέχει ως είσοδο το μέγεθος του πίνακα (N) και τον αριθμό των νημάτων (P).
+Σε κάθε νήμα ανατίθεται ένα εύρος γραμμών για τον υπολογισμό του τοπικού μεγίστου και χρησιμοποιείται ένα mutex για την προστασία του κρίσιμου τμήματος όπου ενημερώνεται το τελικό μέγιστο.
+Αφού ολοκληρώσουν όλα τα νήματα, το πρόγραμμα εκτυπώνει το μέγιστο στοιχείο που βρέθηκε στον πίνακα.
+Το πρόγραμμα μπορεί να εκτελεστεί με διαφορετικούς αριθμούς νημάτων και μεγέθη πινάκων και οι χρόνοι εκτέλεσης μπορούν να συγκριθούν για να αναλυθεί ο αντίκτυπος του παραλληλισμού στις επιδόσεις.
+
+====================================================================================================
+B.
+Γράψτε ένα πρόγραμμα σε C, το οποίο θα χρησιμοποιεί την βιβλιοθήκη των POSIX Threads,
+και θα έχει ως αποτέλεσμα να τυπώνεται επαναληπτικά η ακολουθία:
+<one> <two> <three> <one> <two> <three> <one> <two> <three> …
+Για να πετύχετε το παραπάνω θα πρέπει αρχικά να εκκινήσετε στο πρόγραμμά σας τρία (3)
+διαφορετικά threads (το ένα να τυπώνει <one>, το άλλο να τυπώνει <two> και το τρίτο να
+τυπώνει <three>), και στη συνέχεια να τα συγχρονίσετε κατάλληλα μεταξύ τους. Για τον
+απαιτούμενο συγχρονισμό θα πρέπει να χρησιμοποιήσετε σημαφόρους.
+Στη συνέχεια προσπαθήστε να δώσετε (δεν ζητείται υποχρεωτικά) μια εναλλακτική έκδοση
+του προγράμματός σας χρησιμοποιώντας για τον απαιτούμενο συγχρονισμό condition
+variables (η προσπάθειά σας για την απαίτηση αυτή θα συνυπολογιστεί προσθετικά στον τελικό
+βαθμό της άσκησης – θα μετρήσει δηλαδή ως ‘bonus’).
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define NUM_THREADS 3
+#define NUM_ITERATIONS 10
+
+int flags[NUM_THREADS] = {0};  // Flags for synchronization
+const char* sequence[] = {"<one>", "<two>", "<three>"};
+
+void* print_sequence(void* arg) {
+    int thread_id = *(int*)arg;
+
+    for (int i = 0; i < NUM_ITERATIONS; i++) {
+        while (flags[thread_id] != i)
+            ;  // Wait until it's the thread's turn
+
+        printf("%s ", sequence[thread_id]);
+
+        flags[thread_id] = (flags[thread_id] + 1) % NUM_ITERATIONS;  // Update the flag
+    }
+
+    return NULL;
+}
+
+int main() {
+    pthread_t threads[NUM_THREADS];
+    int thread_ids[NUM_THREADS] = {0, 1, 2};
+
+    // Create threads
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_create(&threads[i], NULL, print_sequence, &thread_ids[i]);
+    }
+
+    // Join threads
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    printf("\n");
+
+    return 0;
+}
+
+Σε αυτό το πρόγραμμα, έχουμε τρία νήματα, καθένα από τα οποία είναι υπεύθυνο για την εκτύπωση ενός συγκεκριμένου στοιχείου της ακολουθίας: <ένα>, <δύο> και <τρία>. Τα νήματα συγχρονίζονται χρησιμοποιώντας σημαίες, οι οποίες ενημερώνονται μετά από κάθε επανάληψη για να καθορίσουν τη σειρά κάθε νήματος.
+
+Η συνάρτηση print_sequence είναι το σημείο εισόδου για κάθε νήμα. Λαμβάνει το αναγνωριστικό νήματος ως όρισμα και το χρησιμοποιεί για να καθορίσει ποιο στοιχείο της ακολουθίας θα εκτυπώσει. Το νήμα περιμένει μέχρι να έρθει η σειρά του, που υποδεικνύεται από την αντίστοιχη σημαία, πριν εκτυπώσει το στοιχείο. Μετά την εκτύπωση, ενημερώνει τη σημαία για να υποδείξει τη σειρά του επόμενου νήματος.
+
+Στη συνάρτηση main, τα νήματα δημιουργούνται και ενώνονται. Το πρόγραμμα θα επαναλάβει έναν σταθερό αριθμό φορών (NUM_ITERATIONS), εκτυπώνοντας την ακολουθία με την επιθυμητή σειρά.
+
+
+
