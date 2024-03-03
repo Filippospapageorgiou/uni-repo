@@ -1,0 +1,372 @@
+9. Ορίστε τύπο δεδομένων varchar(30) στη στήλη JOB_DESCR του πίνακα JOB.
+
+MariaDB [personnel]> alter table JOB modify JOB_DESCR varchar(30);
+Query OK, 0 rows affected (0,014 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+---------------------------------------------------------------------------
+
+
+10. Καταργήστε τη στήλη LOC του πίνακα DEPT.
+
+MariaDB [personnel]> alter table DEPT drop LOC;
+Query OK, 0 rows affected (0,015 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+---------------------------------------------------------------------------
+
+11. Μετονομάστε τη στήλη DNAME του πίνακα DEPT σε DEPT_NAME. Ορίστε και τύπο
+δεδομένων varchar(25) στη στήλη DEPT_NAME. Σημειώστε πως οι αλλαγές αυτές θα πρέπει
+να προκύψουν με την εκτέλεση μιας μόνο δήλωσης.
+
+MariaDB [personnel]> alter table DEPT change DNAME DEPT_NAME varchar(30);
+Query OK, 0 rows affected (0,030 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+-----------------------------------------------------------------------------
+
+12. Προσθέστε περιορισμό πρωτεύοντος κλειδιού (PRIMARY KEY) με το όνομα pk_DEPTNO στον
+πίνακα DEPT.
+
+MariaDB [personnel]> alter table DEPT add constraint pk_DEPTNO primary key (DEPTNO);
+Query OK, 0 rows affected, 1 warning (0,041 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+---------------------------------------------------------------------------------
+
+13. Καταργήστε τον περιορισμό πρωτεύοντος κλειδιού (PRIMARY KEY) στον πίνακα DEPT. Δείξτε
+το αποτέλεσμα της κατάργησης (α) εμφανίζοντας τη δομή του πίνακα DEPT και (β)
+εμφανίζοντας την εντολή create table για τον πίνακα DEPT (βήμα Β.2).
+
+
+MariaDB [personnel]> alter table DEPT drop primary key;
+Query OK, 3 rows affected (0,025 sec)              
+Records: 3  Duplicates: 0  Warnings: 0
+
+MariaDB [personnel]> describe DEPT;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| DEPTNO    | decimal(2,0) | NO   |     | NULL    |       |
+| DEPT_NAME | varchar(30)  | YES  |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+2 rows in set (0,004 sec)
+
+MariaDB [personnel]> show create table DEPT;
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                      |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| DEPT  | CREATE TABLE `DEPT` (
+  `DEPTNO` decimal(2,0) NOT NULL,
+  `DEPT_NAME` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci |
++-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0,000 sec)
+
+----------------------------------------------------------------------------
+
+14. Προσθέστε περιορισμό πρωτεύοντος κλειδιού (PRIMARY KEY) και περιορισμούς ξένου
+κλειδιού (FOREIGN KEY) σε όλους τους πίνακες.
+
+
+MariaDB [personnel]> alter table DEPT add constraint pk_DEPTNO primary key (DEPTNO);
+Query OK, 0 rows affected, 1 warning (0,024 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+MariaDB [personnel]> alter table JOB add constraint pk_jobno primary key (JOBNO);
+ERROR 1072 (42000): Key column 'JOBNO' doesn't exist in table
+MariaDB [personnel]> alter table JOB add constraint pk_jobcode primary key (JOBCODE); 
+Query OK, 0 rows affected, 1 warning (0,022 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+MariaDB [personnel]> alter table EMP add constraint pk_empno primary key (EMPNO);
+Query OK, 0 rows affected, 1 warning (0,023 sec)
+Records: 0  Duplicates: 0  Warnings: 1
+
+
+MariaDB [personnel]> alter table EMP add constraint fk_JOBNO foreign key(JOBNO) references JOB(JOBCODE);
+Query OK, 4 rows affected (0,026 sec)              
+Records: 4  Duplicates: 0  Warnings: 0
+
+MariaDB [personnel]> alter table EMP add constraint fk_DEPTNO foreign key(DEPTNO) references DEPT(DEPTNO);
+Query OK, 4 rows affected (0,047 sec)              
+Records: 4  Duplicates: 0  Warnings: 0
+
+
+-----------------------------------------------------------------------------
+15. Καταργήστε τους περιορισμούς ξένου κλειδιού (FOREIGN KEY) στον πίνακα EMP. Δείξτε το
+αποτέλεσμα της κάθε κατάργησης (α) εμφανίζοντας τη δομή του πίνακα EMP και (β)
+εμφανίζοντας την εντολή create table για τον πίνακα EMP (βήμα Β.2).
+
+MariaDB [personnel]> alter table EMP drop foreign key fk_JOBNO;
+Query OK, 0 rows affected (0,033 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [personnel]> alter table EMP drop foreign key fk_DEPTNO;
+Query OK, 0 rows affected (0,030 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [personnel]> DESCRIBE EMP;
++----------+---------------+------+-----+---------+-------+
+| Field    | Type          | Null | Key | Default | Extra |
++----------+---------------+------+-----+---------+-------+
+| EMPNO    | decimal(4,0)  | NO   | PRI | NULL    |       |
+| NAME     | varchar(24)   | YES  |     | NULL    |       |
+| JOBNO    | decimal(4,0)  | YES  | MUL | NULL    |       |
+| DEPTNO   | decimal(2,0)  | YES  | MUL | NULL    |       |
+| COMM     | decimal(10,2) | YES  |     | NULL    |       |
+| HIREDATE | date          | YES  |     | NULL    |       |
++----------+---------------+------+-----+---------+-------+
+6 rows in set (0,001 sec)
+
+MariaDB [personnel]> SHOW CREATE TABLE EMP;
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table | Create Table                                                                                                                                                                                                                                                                                                                                                                                  |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| EMP   | CREATE TABLE `EMP` (
+  `EMPNO` decimal(4,0) NOT NULL,
+  `NAME` varchar(24) DEFAULT NULL,
+  `JOBNO` decimal(4,0) DEFAULT NULL,
+  `DEPTNO` decimal(2,0) DEFAULT NULL,
+  `COMM` decimal(10,2) DEFAULT NULL,
+  `HIREDATE` date DEFAULT NULL,
+  PRIMARY KEY (`EMPNO`),
+  KEY `fk_JOBNO` (`JOBNO`),
+  KEY `fk_DEPTNO` (`DEPTNO`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci |
++-------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
+----------------------------------------------------------------------------
+
+16. Προσθέστε περιορισμό προεπιλεγμένης τιμής (DEFAULT) στον πίνακα DEPT, θέτοντας
+προεπιλεγμένη τιμή ‘Development’ για τη στήλη DNAME του πίνακα (βήμα Β.5). Δείξτε την
+επίδραση του περιορισμού κάνοντας χρήση των ακόλουθων εντολών και δείχνοντας το
+αποτέλεσμα της εκτέλεσης κάθε εντολής.
+
+
+MariaDB [personnel]> alter table DEPT alter DEPT_NAME set default 'DEVELOPMENT';
+Query OK, 0 rows affected (0,028 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+
+MariaDB [personnel]> insert into EMP(EMPNO,NAME,JOBNO,DEPTNO,COMM) values (10, 'CODD', 100, 50, NULL);
+ERROR 1062 (23000): Duplicate entry '10' for key 'PRIMARY'
+MariaDB [personnel]> insert into DEPT(DEPTNO) (10),(20);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '10),(20)' at line 1
+MariaDB [personnel]> insert int DEPT values (30,'sales');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'int DEPT values (30,'sales')' at line 1
+
+------------------------------------------------------------------------------
+
+17. Εμφανίστε τη λίστα των περιορισμών της ΒΔ personnel.
+
+MariaDB [personnel]> select * from INFORMATION_SCHEMA.TABLE_CONSTRAINTS where CONSTRAINT_SCHEMA='personnel';
++--------------------+-------------------+-----------------+--------------+------------+-----------------+
+| CONSTRAINT_CATALOG | CONSTRAINT_SCHEMA | CONSTRAINT_NAME | TABLE_SCHEMA | TABLE_NAME | CONSTRAINT_TYPE |
++--------------------+-------------------+-----------------+--------------+------------+-----------------+
+| def                | personnel         | PRIMARY         | personnel    | DEPT       | PRIMARY KEY     |
+| def                | personnel         | PRIMARY         | personnel    | JOB        | PRIMARY KEY     |
+| def                | personnel         | PRIMARY         | personnel    | EMP        | PRIMARY KEY     |
++--------------------+-------------------+-----------------+--------------+------------+-----------------+
+3 rows in set (0,048 sec)
+
+------------------------------------------------------------------------------
+
+18. Δημιουργήστε πίνακα PROJECT με στήλες P_ID και P_NAME. Να ληφθούν υπόψιν οι τύποι
+δεδομένων που περιγράφονται στον Πίνακα 1. Ορίστε πρωτεύον κλειδί και θέστε
+περιορισμό AUTO_INCREMENT για την στήλη P_ID του πίνακα.
+
+MariaDB [personnel]> create table PROJECT(P_ID int not null AUTO_INCREMENT primary key,P_NAME varchar (25));
+Query OK, 0 rows affected (0,009 sec)
+
+
+----------------------------------------------------------------------------
+
+
+19. Εκτελέστε τουλάχιστον μια εντολή καταχώρησης εγγραφής, ώστε να δείξετε τη λειτουργία
+του περιορισμού. Εμφανίστε και το αποτέλεσμα της εκτέλεσης της εντολής.
+
+
+MariaDB [personnel]> insert into PROJECT (P_NAME) values ('WEBSITE');
+Query OK, 1 row affected (0,020 sec)
+
+MariaDB [personnel]> SELECT * FROM PROJECT;
++------+---------+
+| P_ID | P_NAME  |
++------+---------+
+|    1 | WEBSITE |
++------+---------+
+1 row in set (0,000 sec)
+
+------------------------------------------------------------------------------
+
+20. Ορίστε αρχική τιμή 200 για τον περιορισμό AUTO_INCREMENT και επαναλάβετε το
+προηγούμενο βήμα 19.
+
+MariaDB [personnel]> alter table PROJECT alter P_ID set default 200;
+Query OK, 0 rows affected (0,029 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+MariaDB [personnel]> insert into PROJECT (P_NAME) values ('WEBSITE');
+Query OK, 1 row affected (0,003 sec)
+
+MariaDB [personnel]> SELECT * FROM PROJECT;
++------+---------+
+| P_ID | P_NAME  |
++------+---------+
+|    1 | WEBSITE |
+|  200 | WEBSITE |
++------+---------+
+2 rows in set (0,000 sec)
+
+MariaDB [personnel]> insert into PROJECT (P_NAME) values ('WEBSITE');
+ERROR 1062 (23000): Duplicate entry '200' for key 'PRIMARY'
+MariaDB [personnel]> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
