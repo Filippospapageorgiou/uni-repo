@@ -1,0 +1,34 @@
+START=SZ
+SZ:   0-9 -> S0      
+      * -> BAD
+S0:   0-9 -> S0      
+      . -> S1        
+      e,E -> S3      
+      * -> BAD
+      \n -> BAD  
+S1:   0-9 -> S2    
+      * -> BAD
+S2:   0-9 -> S2      
+      e,E -> S3      
+      \n -> GOOD  
+      * -> BAD
+S3:   -,+  -> S4     
+      0-9 -> S5      
+      * -> BAD
+S4:   0-9 -> S5      
+      * -> BAD
+S5:   0-9 -> S5      
+      \n -> GOOD  
+      * -> BAD
+GOOD(OK):
+
+
+
+
+
+
+
+
+
+
+
