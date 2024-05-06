@@ -1,0 +1,9 @@
+#define DELIMITER 1
+#define INTEGER 2
+#define FLOAT 3
+#define KEYWORD 4
+#define OPERATOR 5
+#define IDENTIFIER 6
+#define COMMENT 8
+#define STRING 7
+#define UNKOWN_TOKEN 9
