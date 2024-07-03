@@ -1,0 +1,67 @@
+8
+2
+6
+2
+3
+9
+1
+1
+1
+1
+1
+1
+3
+1, 2, 3, 4
+1, 2.30, "ad"
+5
+0
+1
+7
+-10
+0b1111
+0B0000
+0b010101001010101
+1.20
+10000000000.00
+10000000000.00
+0.00
+1j
+2j
+-3j
+1.2E10j
+1.5e-10j
+Potteridis13
+_test
+"test 1"
+'test 2'
+"Hello world!"
+'Mark said, \"Boo!\"\n'
+"Dimitris, Marinos, Nikos, Nikos"
+1, 2, 3, 4
+1, 2.30, "ad", 'ad', 7
+2
+3
+"test"
+3
+1
+10
+0
+0
+1
+0
+4
+4
+1
+0
+8
+Mark
+
+Parsing completed with : 
+
+Correct expression(s) : 57
+
+Correct word(s) : 106
+
+Warning(s) : 13
+
+Error(s) : 4
